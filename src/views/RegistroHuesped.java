@@ -89,7 +89,7 @@ public class RegistroHuesped extends JFrame {
 		lblNewLabel_1_1.setBounds(576, 194, 255, 14);
 		contentPane.add(lblNewLabel_1_1);
 		
-		JLabel lblNewLabel_1_1_1 = new JLabel("Fecha de Nascimiento");
+		JLabel lblNewLabel_1_1_1 = new JLabel("Fecha de Nacimiento");
 		lblNewLabel_1_1_1.setFont(new Font("Arial", Font.PLAIN, 14));
 		lblNewLabel_1_1_1.setBounds(576, 256, 255, 14);
 		contentPane.add(lblNewLabel_1_1_1);
