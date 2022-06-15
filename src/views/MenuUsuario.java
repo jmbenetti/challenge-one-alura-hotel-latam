@@ -15,6 +15,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
 
+import java.sql.ResultSet;
+
 public class MenuUsuario extends JFrame {
 
 	private JPanel contentPane;
@@ -23,6 +25,7 @@ public class MenuUsuario extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -48,17 +51,17 @@ public class MenuUsuario extends JFrame {
 		contentPane.setLayout(null);
 		setResizable(false);
 		setLocationRelativeTo(null);
-		
+
 		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setIcon(new ImageIcon(MenuUsuario.class.getResource("/imagenes/menu-img.png")));
 		lblNewLabel.setBounds(-56, 0, 741, 471);
 		contentPane.add(lblNewLabel);
-		
+
 		JLabel lblNewLabel_2 = new JLabel("");
 		lblNewLabel_2.setIcon(new ImageIcon(MenuUsuario.class.getResource("/imagenes/Ha-100px.png")));
 		lblNewLabel_2.setBounds(724, 32, 104, 107);
 		contentPane.add(lblNewLabel_2);
-		
+
 		JButton btnReserva = new JButton("");
 		btnReserva.setIcon(new ImageIcon(MenuUsuario.class.getResource("/imagenes/reservas.png")));
 		btnReserva.addActionListener(new ActionListener() {
@@ -72,17 +75,17 @@ public class MenuUsuario extends JFrame {
 		btnReserva.setBackground(Color.WHITE);
 		btnReserva.setBounds(741, 186, 71, 73);
 		contentPane.add(btnReserva);
-		
+
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(new Color(12, 138, 199));
 		panel_1.setBounds(0, 470, 894, 30);
 		contentPane.add(panel_1);
-		
+
 		JLabel lblNewLabel_3 = new JLabel("Desarrollado por Fulanita de Tal © 2022");
 		lblNewLabel_3.setForeground(new Color(12, 138, 199));
 		lblNewLabel_3.setFont(new Font("Arial", Font.PLAIN, 13));
 		panel_1.add(lblNewLabel_3);
-		
+
 		JButton btnSalir = new JButton("");
 		btnSalir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -96,19 +99,19 @@ public class MenuUsuario extends JFrame {
 		btnSalir.setBackground(Color.WHITE);
 		btnSalir.setBounds(823, 411, 50, 47);
 		contentPane.add(btnSalir);
-		
+
 		JLabel lblNewLabel_1_1 = new JLabel("Reservas");
 		lblNewLabel_1_1.setForeground(new Color(12, 138, 199));
 		lblNewLabel_1_1.setFont(new Font("Arial", Font.BOLD, 16));
 		lblNewLabel_1_1.setBounds(741, 163, 80, 17);
 		contentPane.add(lblNewLabel_1_1);
-		
+
 		JLabel lblNewLabel_1_1_1 = new JLabel("Búsqueda");
 		lblNewLabel_1_1_1.setForeground(new Color(12, 138, 199));
 		lblNewLabel_1_1_1.setFont(new Font("Arial", Font.BOLD, 16));
 		lblNewLabel_1_1_1.setBounds(741, 274, 80, 17);
 		contentPane.add(lblNewLabel_1_1_1);
-		
+
 		JButton btnBusqueda = new JButton("");
 		btnBusqueda.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

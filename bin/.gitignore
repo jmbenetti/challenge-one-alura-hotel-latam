@@ -1,2 +1,4 @@
-/lib/
 /views/
+/lib/
+/conexionBD.class
+/ConexionBD.class
