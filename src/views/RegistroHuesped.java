@@ -12,13 +12,20 @@ import com.toedter.calendar.JDateChooser;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 
 public class RegistroHuesped extends JFrame {
 
@@ -211,6 +218,16 @@ public class RegistroHuesped extends JFrame {
 		contentPane.add(lblNewLabel);
 
 		JButton btnCancelar = new JButton("");
+		btnCancelar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				txtNombre.setText("");
+				txtApellido.setText("");
+				txtFechaN.setCalendar(null);
+				txtNacionalidad.setSelectedIndex(0);
+				txtTelefono.setText("");
+			}
+		});
 		btnCancelar.setIcon(new ImageIcon(RegistroHuesped.class.getResource("/imagenes/cancelar.png")));
 		btnCancelar.setBackground(SystemColor.menu);
 		btnCancelar.setBounds(764, 543, 54, 41);
@@ -219,9 +236,53 @@ public class RegistroHuesped extends JFrame {
 		JButton btnGuardar = new JButton("");
 		btnGuardar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Exito exito = new Exito();
-				exito.setVisible(true);
-				dispose();
+				String szErrores = "";
+
+				// Revisar campos cargados
+				String szNombre = txtNombre.getText();
+				String szApellido = txtApellido.getText();
+				Date fechaNacimiento = txtFechaN.getDate();
+				String szNacionalidad = txtNacionalidad.getSelectedItem().toString();
+				String szTelefono = txtTelefono.getText();
+				long nReserva = -1;
+				if (!txtNreserva.getText().isBlank()) {
+					nReserva = Long.parseLong(txtNreserva.getText());
+				}
+
+				if (szNombre.isBlank()) {
+					szErrores += "Debe ingresar un nombre. ";
+				}
+				if (szApellido.isBlank()) {
+					szErrores += "Debe ingresar un apellido. ";
+				}
+				if (fechaNacimiento == null) {
+					szErrores += "Falta la fecha de nacimiento. ";
+				}
+				if (szNacionalidad.isBlank()) {
+					szErrores += "Debe seleccionar la nacionalidad. ";
+				}
+				if (szTelefono.isBlank()) {
+					szErrores += "Falta el número de teléfono. ";
+				}
+
+				// --
+
+				if (szErrores.isBlank()) {
+					
+					if(nuevoCliente(szNombre, szApellido, fechaNacimiento, szNacionalidad, szTelefono, nReserva))
+					{
+						Exito exito = new Exito();
+						exito.setVisible(true);
+						dispose();
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(null, "No se pudo guardar el cliente.");
+					}
+					
+				} else {
+					JOptionPane.showMessageDialog(null, szErrores);
+				}
 			}
 		});
 		btnGuardar.setIcon(new ImageIcon(RegistroHuesped.class.getResource("/imagenes/disquete.png")));
@@ -232,9 +293,14 @@ public class RegistroHuesped extends JFrame {
 		JButton btnSalir = new JButton("");
 		btnSalir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				MenuUsuario usuario = new MenuUsuario();
-				usuario.setVisible(true);
-				dispose();
+				if (JOptionPane.showConfirmDialog(null,
+						"Si sale ahora, se cancelará la reserva creada, ¿desea continuar?", "Atención",
+						JOptionPane.YES_NO_OPTION) == 0) {
+					borrarReservaCancelada();
+					MenuUsuario usuario = new MenuUsuario();
+					usuario.setVisible(true);
+					dispose();
+				}
 			}
 		});
 		btnSalir.setIcon(new ImageIcon(RegistroHuesped.class.getResource("/imagenes/cerrar-sesion 32-px.png")));
@@ -281,4 +347,41 @@ public class RegistroHuesped extends JFrame {
 		txtNreserva.setDisabledTextColor(Color.BLACK);
 		contentPane.add(txtNreserva);
 	}
+
+	private void borrarReservaCancelada() {
+		if (!txtNreserva.getText().isBlank()) {
+			String szDelete = "DELETE FROM `alurahotel`.`reservas` WHERE id=" + txtNreserva.getText() + ";";
+			ConexionBD miConexion = new ConexionBD();
+			try {
+				miConexion.actualizar(szDelete);
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+		}
+	}
+
+	private boolean nuevoCliente(String szNombre, String szApellido, Date fechaNacimiento, String szNacionalidad,
+			String szTelefono, long nReserva) {
+		boolean bGuardado = false;
+		String pattern = "yyyy-MM-dd";
+		SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+		String szFechaNacimiento = formatter.format(fechaNacimiento);
+
+		String szInsert = "INSERT INTO alurahotel.huespedes(nombre, apellido, nacimiento, nacionalidad, telefono, reserva) "
+				+ "VALUES('" + szNombre + "', '" + szApellido + "', '" + szFechaNacimiento + "', '" + szNacionalidad
+				+ "', '" + szTelefono + "', '"+ nReserva + "')";
+		
+		ConexionBD miConexion = new ConexionBD();
+		try {
+			miConexion.actualizar(szInsert);
+			bGuardado = true;
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		System.out.println("Se guardaron los datos del cliente.");
+		return bGuardado;
+	}
+
 }

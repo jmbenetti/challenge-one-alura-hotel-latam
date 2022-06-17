@@ -17,6 +17,13 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Login extends JFrame {
 
@@ -44,8 +51,22 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
+		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Object[] opciones = { "Aceptar", "Cancelar" };
+				int eleccion = JOptionPane.showOptionDialog(rootPane, "¿Está seguro de que desea salir?", "Atención",
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, "Aceptar");
+				if (eleccion == JOptionPane.YES_OPTION) {
+					System.exit(0);
+				} else {
+				}
+
+			}
+		});
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/imagenes/perfil-del-usuario.png")));
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 700, 538);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -84,17 +105,14 @@ public class Login extends JFrame {
 
 				char[] claveIngresada = txtContrasena.getPassword();
 				boolean claveOk = revisarClave(txtUsuario.getText(), claveIngresada);
-				//JOptionPane.showMessageDialog(btnLogin, claveOk);
-				
-				if(claveOk)
-				{
-				
+				// JOptionPane.showMessageDialog(btnLogin, claveOk);
+
+				if (claveOk) {
+
 					MenuUsuario usuario = new MenuUsuario();
 					usuario.setVisible(true);
 					dispose();
-				}
-				else
-				{
+				} else {
 					JOptionPane.showMessageDialog(btnLogin, "Datos de acceso incorrectos");
 				}
 			}
@@ -103,13 +121,26 @@ public class Login extends JFrame {
 		contentPane.add(btnLogin);
 
 		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Object[] opciones = { "Aceptar", "Cancelar" };
+				int eleccion = JOptionPane.showOptionDialog(rootPane, "¿Está seguro de que desea salir?", "Atención",
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, "Aceptar");
+				if (eleccion == JOptionPane.YES_OPTION) {
+					System.exit(0);
+				} else {
+				}
+			}
+		});
 		btnCancelar.setIcon(new ImageIcon(Login.class.getResource("/imagenes/cerrar-24px.png")));
 		btnCancelar.setBounds(540, 322, 103, 33);
 		contentPane.add(btnCancelar);
 
-		JLabel lblNewLabel_1 = new JLabel("New label");
+		JLabel lblNewLabel_1 = new JLabel("Ingrese sus datos de acceso");
+		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_1.setIcon(new ImageIcon("C:\\Users\\Genesys\\Documents\\imagenesAluraHotel\\Ha-100px.png"));
-		lblNewLabel_1.setBounds(470, 30, 103, 94);
+		lblNewLabel_1.setBounds(409, 30, 234, 94);
 		contentPane.add(lblNewLabel_1);
 	}
 
@@ -117,7 +148,7 @@ public class Login extends JFrame {
 		boolean esCorrecta = true;
 		String szUsuarioHabilitado = "admin";
 		char[] claveCorrecta = { '1', '2', '3', '4' };
-		
+
 		if (szUsuario.equals(szUsuarioHabilitado)) {
 
 			if (claveIngresada.length != claveCorrecta.length) {
@@ -130,9 +161,8 @@ public class Login extends JFrame {
 
 			Arrays.fill(claveCorrecta, '0');
 		}
-		
-		else
-		{
+
+		else {
 			esCorrecta = false;
 //			System.out.println("Usuario no coincide");
 		}

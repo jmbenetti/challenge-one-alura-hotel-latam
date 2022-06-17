@@ -23,9 +23,11 @@ import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.JButton;
@@ -188,6 +190,11 @@ public class Reservas extends JFrame {
 //				System.out.println(szFormaPago);
 
 //				System.out.println(szErrores);
+				//Obtengo la fecha actual sin hora
+				Date fechaActual = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+				if(fechaEntrada.before(fechaActual))
+				{szErrores += "La fecha de entrada no puede ser anterior al día de hoy. ";}
+				
 
 				if (szErrores.isBlank()) {
 					// Crear reserva en base de datos

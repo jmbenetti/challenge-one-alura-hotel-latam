@@ -5,7 +5,11 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -13,19 +17,26 @@ import javax.swing.ImageIcon;
 import java.awt.Color;
 import java.awt.SystemColor;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JDesktopPane;
 import java.awt.Toolkit;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 public class Busqueda extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField txtBuscar;
 	private JTable tbHuespedes;
+	private JTable tbReservas;
+	private JTabbedPane panel;
 
 	/**
 	 * Launch the application.
@@ -64,6 +75,30 @@ public class Busqueda extends JFrame {
 		JButton btnBuscar = new JButton("");
 		btnBuscar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(panel.getSelectedIndex()==0) {
+					//Huespedes
+					if(txtBuscar.getText().isBlank())
+					{
+						mostrarHuespedes("");
+					}
+					else
+					{
+						mostrarHuespedes("apellido LIKE '%" + txtBuscar.getText() + "%'");
+					}
+				}
+				else
+				{
+					//reservas
+					if(txtBuscar.getText().isBlank())
+					{
+						mostrarReservas("");
+					}
+					else
+					{
+						mostrarReservas("id=" + txtBuscar.getText());
+					}
+				}
+				
 			}
 		});
 		btnBuscar.setBackground(Color.WHITE);
@@ -97,17 +132,22 @@ public class Busqueda extends JFrame {
 		btnSalir.setBounds(815, 416, 54, 41);
 		contentPane.add(btnSalir);
 		
-		JTabbedPane panel = new JTabbedPane(JTabbedPane.TOP);
+		panel = new JTabbedPane(JTabbedPane.TOP);
+		panel.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				txtBuscar.setText("");
+			}
+		});
 		panel.setBounds(10, 127, 874, 265);
 		contentPane.add(panel);
 		
 		tbHuespedes = new JTable();
 		tbHuespedes.setFont(new Font("Arial", Font.PLAIN, 14));
-		panel.addTab("Huéspedes", new ImageIcon(Busqueda.class.getResource("/imagenes/persona.png")), tbHuespedes, null);
+		panel.addTab("Huéspedes", new ImageIcon(Busqueda.class.getResource("/imagenes/persona.png")), new JScrollPane(tbHuespedes), null);
 		
-		JTable tbReservas = new JTable();
+		tbReservas = new JTable();
 		tbReservas.setFont(new Font("Arial", Font.PLAIN, 14));
-		panel.addTab("Reservas", new ImageIcon(Busqueda.class.getResource("/imagenes/calendario.png")), tbReservas, null);
+		panel.addTab("Reservas", new ImageIcon(Busqueda.class.getResource("/imagenes/calendario.png")), new JScrollPane(tbReservas), null);
 		
 		JButton btnEliminar = new JButton("");
 		btnEliminar.setIcon(new ImageIcon(Busqueda.class.getResource("/imagenes/deletar.png")));
@@ -126,5 +166,68 @@ public class Busqueda extends JFrame {
 		lblNewLabel_2.setBounds(25, 10, 104, 107);
 		contentPane.add(lblNewLabel_2);
 		setResizable(false);
+		mostrarHuespedes("");
+		mostrarReservas("");
+	}
+	private void mostrarHuespedes(String szBusqueda) {
+		String szValor[] = new String[7];
+		String szColumna[] = {"id", "Nombre", "Apellido", "Nacimiento", "Nacionalidad", "Teléfono", "Reserva"};
+		DefaultTableModel miTableModel = new DefaultTableModel(szColumna,0);
+		String szConsulta = "SELECT * FROM huespedes WHERE 1";
+		if(!szBusqueda.isBlank())
+		{
+			szConsulta += " AND " + szBusqueda;
+		}
+		ConexionBD miConexionBD = new ConexionBD();
+		ResultSet miResultSet = null;
+		try {
+			miResultSet = miConexionBD.consultar(szConsulta);
+			while (miResultSet.next()) {
+				szValor[0] = miResultSet.getString("id");
+				szValor[1] = miResultSet.getString("nombre");
+				szValor[2] = miResultSet.getString("apellido");
+				szValor[3] = miResultSet.getString("nacimiento");
+				szValor[4] = miResultSet.getString("nacionalidad");
+				szValor[5] = miResultSet.getString("telefono");
+				szValor[6] = miResultSet.getString("reserva");
+				miTableModel.addRow(szValor);
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println("Error al leer de la base de datos.");
+		}
+		tbHuespedes.setModel(miTableModel);
+	}
+	
+	private void mostrarReservas(String szBusqueda)
+	{
+		String szValor[] = new String[5];
+		String szColumna[] = {"id", "Entrada", "Salida", "Valor", "Forma de pago"};
+		DefaultTableModel miTableModel = new DefaultTableModel(szColumna,0);
+		String szConsulta = "SELECT * FROM reservas WHERE 1";
+		if(!szBusqueda.isBlank())
+		{
+			szConsulta += " AND " + szBusqueda;
+		}
+		ConexionBD miConexionBD = new ConexionBD();
+		ResultSet miResultSet = null;
+		try {
+			miResultSet = miConexionBD.consultar(szConsulta);
+			while (miResultSet.next()) {
+				szValor[0] = miResultSet.getString("id");
+				szValor[1] = miResultSet.getString("fechaentrada");
+				szValor[2] = miResultSet.getString("fechasalida");
+				szValor[3] = miResultSet.getString("valor");
+				szValor[4] = miResultSet.getString("formapago");
+				miTableModel.addRow(szValor);
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println("Error al leer de la base de datos.");
+		}
+		tbReservas.setModel(miTableModel);
 	}
 }
+

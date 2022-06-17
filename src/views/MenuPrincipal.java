@@ -3,6 +3,7 @@ package views;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.Panel;
 import java.awt.Color;
@@ -15,6 +16,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 @SuppressWarnings("serial")
 public class MenuPrincipal extends JFrame {
@@ -41,6 +44,21 @@ public class MenuPrincipal extends JFrame {
 	 * Create the frame.
 	 */
 	public MenuPrincipal() {
+		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Object [] opciones ={"Aceptar","Cancelar"};
+				 int eleccion = JOptionPane.showOptionDialog(rootPane,"¿Está seguro de que desea salir?","Atención",
+				 JOptionPane.YES_NO_OPTION,
+				 JOptionPane.QUESTION_MESSAGE,null,opciones,"Aceptar");
+				 if (eleccion == JOptionPane.YES_OPTION)
+				 {
+				 System.exit(0);
+				 }else{
+				 }
+			}
+		});
 		setIconImage(Toolkit.getDefaultToolkit().getImage(MenuPrincipal.class.getResource("/imagenes/aH-40px.png")));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 910, 537);
@@ -102,7 +120,7 @@ public class MenuPrincipal extends JFrame {
 		btnSalir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object [] opciones ={"Aceptar","Cancelar"};
-				 int eleccion = JOptionPane.showOptionDialog(rootPane,"En realidad desea realizar cerrar la aplicacion","Mensaje de Confirmacion",
+				 int eleccion = JOptionPane.showOptionDialog(rootPane,"¿Está seguro de que desea salir?","Atención",
 				 JOptionPane.YES_NO_OPTION,
 				 JOptionPane.QUESTION_MESSAGE,null,opciones,"Aceptar");
 				 if (eleccion == JOptionPane.YES_OPTION)
