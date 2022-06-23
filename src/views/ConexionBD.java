@@ -34,19 +34,21 @@ public class ConexionBD {
 			this.conexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/alurahotel", "root", "1234");
 //			Statement stmt = conexion.createStatement();
 //			ResultSet rs = stmt.executeQuery("show databases;");
-			System.out.println("Connected");
+//			System.out.println("Connected");
 		} catch (Exception e) {
 			System.out.println(e);
 		}
 
 	}
 	
-	public void actualizar(String szConsulta) {
+	public boolean actualizar(String szConsulta) {
 		try {
 			Statement miStatement = this.conexion.createStatement();
 			miStatement.executeUpdate(szConsulta);
+			return true;
 		} catch (Exception e) {
 			System.out.println(e);
+			return false;
 		}
 	}
 

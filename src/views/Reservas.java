@@ -144,8 +144,7 @@ public class Reservas extends JFrame {
 		JComboBox txtFormaPago = new JComboBox();
 		txtFormaPago.setBounds(88, 373, 235, 33);
 		txtFormaPago.setFont(new Font("Arial", Font.PLAIN, 14));
-		txtFormaPago.setModel(new DefaultComboBoxModel(
-				new String[] { "Tarjeta de Crédito", "Tarjeta de Débito", "Dinero en efectivo" }));
+		txtFormaPago.setModel(new DefaultComboBoxModel(Informacion.formasdepago));
 		panel.add(txtFormaPago);
 
 		JLabel lblNewLabel_1_1_1_1 = new JLabel("Forma de pago");
