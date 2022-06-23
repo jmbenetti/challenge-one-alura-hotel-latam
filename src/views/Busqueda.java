@@ -108,22 +108,20 @@ public class Busqueda extends JFrame {
 		contentPane.add(btnBuscar);
 
 		btnEditar = new JButton("");
-		
+
 		btnCancelar = new JButton("");
 		btnEditar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// Huéspedes
 				JTable tbEditada = null;
-				if (panel.getSelectedIndex() == 0)
-				{
+				if (panel.getSelectedIndex() == 0) {
 					tbEditada = tbHuespedes;
 				}
-				if (panel.getSelectedIndex() == 1)
-				{
+				if (panel.getSelectedIndex() == 1) {
 					tbEditada = tbReservas;
 				}
-				
+
 				int nFila = tbEditada.getSelectedRow();
 				int nColumna = tbEditada.getSelectedColumn();
 				nFilaEditada = nFila;
@@ -183,14 +181,13 @@ public class Busqueda extends JFrame {
 		tbHuespedes.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_LEFT ||
-						e.getKeyCode() == KeyEvent.VK_KP_UP || e.getKeyCode() == KeyEvent.VK_DOWN)
-				{
+				if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_LEFT
+						|| e.getKeyCode() == KeyEvent.VK_KP_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
 					verCambioCelda();
 				}
-				
+
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					
+
 					// Si estoy editando...
 					if (btnCancelar.isEnabled()) {
 						terminarEdicion();
@@ -209,24 +206,23 @@ public class Busqueda extends JFrame {
 				verCambioCelda();
 			}
 		});
-		
+
 		tbHuespedes.setFont(new Font("Arial", Font.PLAIN, 14));
 		panel.addTab("Huéspedes", new ImageIcon(Busqueda.class.getResource("/imagenes/persona.png")),
 				new JScrollPane(tbHuespedes), null);
 
 		tbReservas = new JTableEditable();
-	
+
 		tbReservas.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_LEFT ||
-						e.getKeyCode() == KeyEvent.VK_KP_UP || e.getKeyCode() == KeyEvent.VK_DOWN)
-				{
+				if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_LEFT
+						|| e.getKeyCode() == KeyEvent.VK_KP_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
 					verCambioCelda();
 				}
-				
+
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					
+
 					// Si estoy editando...
 					if (btnCancelar.isEnabled()) {
 						terminarEdicion();
@@ -238,9 +234,8 @@ public class Busqueda extends JFrame {
 			}
 		});
 
-
 		tbReservas.setRowSelectionAllowed(false);
-		
+
 		tbReservas.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -377,7 +372,7 @@ public class Busqueda extends JFrame {
 				szValor[1] = new SimpleDateFormat("dd/MM/yyyy").format((Date) miResultSet.getDate("fechaentrada"));
 //				szValor[2] = miResultSet.getString("fechasalida");
 				szValor[2] = new SimpleDateFormat("dd/MM/yyyy").format((Date) miResultSet.getDate("fechasalida"));
-				//Saco los decimales al valor
+				// Saco los decimales al valor
 				szValor[3] = String.valueOf(miResultSet.getString("valor")).split("\\.")[0];
 				szValor[4] = miResultSet.getString("formapago");
 				miTableModel.addRow(szValor);
@@ -466,28 +461,45 @@ public class Busqueda extends JFrame {
 	}
 
 	private void guardarDatosHuesped(int nFila, int nColumna) {
-		String[] szColumna = {"id", "nombre", "apellido", "nacimiento", "nacionalidad", "telefono", "reserva"};
-		
+		String[] szColumna = { "id", "nombre", "apellido", "nacimiento", "nacionalidad", "telefono", "reserva" };
+
 		String szValor = (String) tbHuespedes.getValueAt(nFila, nColumna);
-		//Si es columna de fecha, le doy formato de SQL
-		if(nColumna == 3)
-		{
+		// Si es columna de fecha, le doy formato de SQL
+		if (nColumna == 3) {
 			szValor = Informacion.fechaSql(szValor);
 		}
-		int nId = Integer.parseInt((String) tbHuespedes.getValueAt(nFila, 0)); 
-		
-		String szUpdate = "UPDATE huespedes SET " + szColumna[nColumna] + "='" +
-				szValor + "' WHERE id=" + nId;
-		//System.out.println(szUpdate);
+		int nId = Integer.parseInt((String) tbHuespedes.getValueAt(nFila, 0));
+
+		String szUpdate = "UPDATE huespedes SET " + szColumna[nColumna] + "='" + szValor + "' WHERE id=" + nId;
+		// System.out.println(szUpdate);
 		ConexionBD miConexionBD = new ConexionBD();
-		if(miConexionBD.actualizar(szUpdate))
-		{
+		if (miConexionBD.actualizar(szUpdate)) {
 			JOptionPane.showMessageDialog(null, "Datos actualizados con éxito");
-		}
-		else
-		{
+		} else {
 			JOptionPane.showMessageDialog(null, "Error al intentar guardar los datos");
-		}		
+		}
+		actualizarTabla();
+	}
+
+	private void guardarDatosReserva(int nFila, int nColumna) {
+		String[] szColumna = { "id", "fechaentrada", "fechasalida", "valor", "formapago" };
+
+		String szValor = (String) tbReservas.getValueAt(nFila, nColumna);
+		// Si es columna de fecha, le doy formato de SQL
+		if (nColumna == 1 || nColumna == 2) {
+			szValor = Informacion.fechaSql(szValor);
+		}
+		int nId = Integer.parseInt((String) tbReservas.getValueAt(nFila, 0));
+
+		String szUpdate = "UPDATE reservas SET " + szColumna[nColumna] + "='" + szValor + "' WHERE id=" + nId;
+		
+		ConexionBD miConexionBD = new ConexionBD();
+		if (miConexionBD.actualizar(szUpdate)) {
+			JOptionPane.showMessageDialog(null, "Datos actualizados con éxito");
+		} else {
+			JOptionPane.showMessageDialog(null, "Error al intentar guardar los datos");
+		}
+		actualizarTabla();
 	}
 
 	private void cancelarEdicion() {
@@ -503,14 +515,13 @@ public class Busqueda extends JFrame {
 		btnCancelar.setEnabled(false);
 		// Si estoy en el panel huéspedes
 		if (panel.getSelectedIndex() == 0) {
-//			System.out.println("Guardando en BD");
-//			System.out.println(nFilaEditada + ", " + nColumnaEditada);
-			guardarDatosHuesped(nFilaEditada, tbHuespedes.getSelectedColumn());
-		}
-		else
-		{
-			System.out.println("Guardar reservas");
-			System.out.println("Fila: " + nFilaEditada + " columna " + nColumnaEditada);
+
+			guardarDatosHuesped(nFilaEditada, nColumnaEditada);
+		} else {
+			// reservas
+//			System.out.println("Guardar reservas");
+//			System.out.println("Fila: " + nFilaEditada + " columna " + nColumnaEditada);
+			guardarDatosReserva(nFilaEditada, nColumnaEditada);
 		}
 
 	}
@@ -533,10 +544,8 @@ public class Busqueda extends JFrame {
 						cancelarEdicion();
 					}
 				}
-			}
-			else {
-				if (tbReservas.getSelectedColumn() != nColumnaEditada
-						|| tbReservas.getSelectedRow() != nFilaEditada) {
+			} else {
+				if (tbReservas.getSelectedColumn() != nColumnaEditada || tbReservas.getSelectedRow() != nFilaEditada) {
 					// Si estoy en un combo, guardo al cambiar de celda
 					if (nColumnaEditada == 4) {
 						terminarEdicion();
